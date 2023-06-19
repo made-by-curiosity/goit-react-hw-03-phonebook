@@ -5,17 +5,36 @@ import { AddForm } from 'components/Form/Form';
 import { Container } from './Container/Container';
 import { Section } from './Section/Section';
 import { Filter } from './Filter/Filter';
+import storage from '../utils/localStorageAPI';
+
+const STORAGE_KEY = 'phonebook_contacts';
+
+// storage.save(STORAGE_KEY, {
+//   contacts: [
+//     { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
+//     { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
+//     { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
+//     { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
+//   ],
+// });
 
 export class App extends Component {
   state = {
-    contacts: [
-      { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
-      { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
-      { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
-      { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
-    ],
+    contacts: [],
     filter: '',
   };
+
+  componentDidMount() {
+    const contacts = storage.load(STORAGE_KEY);
+
+    contacts && this.setState({ contacts });
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.contacts !== prevState.contacts) {
+      storage.save(STORAGE_KEY, this.state.contacts);
+    }
+  }
 
   handleSubmit = values => {
     const hasContact = this.state.contacts.find(
